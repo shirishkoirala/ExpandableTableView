@@ -18,7 +18,8 @@ class ViewController: UIViewController {
                 heading: "Heading \($0)",
                 title: "Title \($0)",
                 description: $0 % 2 == 0 ? longDescription : shortDescription,
-                footer: footerText
+                footer: footerText,
+                numbers: $0 % 2 == 0 ? Array(1...100).map{$0.description} : nil
             )
         }
     }()
@@ -68,16 +69,8 @@ extension ViewController: UITableViewDelegate {
 
 extension ViewController: ExpandibleCellDelegate {
     func expandableTableViewCell(_ tableViewCell: UITableViewCell, expanded: Bool) {
-        let indexPath = tableView.indexPath(for: tableViewCell)
-        data[indexPath!.row].isExpanded = expanded
-    }
-}
-
-extension UIView {
-    func findParentTableView() -> UITableView? {
-        if let tableView = self as? UITableView {
-            return tableView
+        if let indexPath = tableView.indexPath(for: tableViewCell){
+            data[indexPath.row].isExpanded = expanded
         }
-        return superview?.findParentTableView()
     }
 }

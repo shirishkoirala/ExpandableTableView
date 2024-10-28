@@ -80,6 +80,7 @@ class ExpandibleCell: UITableViewCell {
         ])
         
         expandableContent.addArrangedSubview(detailsLabel)
+        expandableContent.addArrangedSubview(numbersView)
         
         cardView.addSubview(footerLabel)
         NSLayoutConstraint.activate([
@@ -93,6 +94,11 @@ class ExpandibleCell: UITableViewCell {
         backgroundColor = .clear
         contentView.backgroundColor = .clear
     }
+    private let numbersView: NumbersView = {
+        let view = NumbersView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
     
     private let cardView: UIView = {
         let view = UIView()

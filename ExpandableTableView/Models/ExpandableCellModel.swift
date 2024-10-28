@@ -10,5 +10,6 @@ struct ExpandableCellModel {
     let title: String
     let description: String
     let footer: String
+    let numbers: [String]?
     var isExpanded: Bool = false
 }
