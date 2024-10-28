@@ -25,7 +25,6 @@ class ExpandibleCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.setupViews()
-        
     }
     required init?(coder: NSCoder) {
         super.init(coder: coder)
@@ -33,14 +32,12 @@ class ExpandibleCell: UITableViewCell {
     }
     
     func configure(with model: ExpandableCellModel) {
-        titleLabel.text = model.title
         detailsLabel.text = model.description
         
         expanded = model.isExpanded
         
-        expandButton.transform = expanded
-        ? .init(rotationAngle: .pi - 0.001)
-        : .identity
+        expandView.expanded = expanded
+        expandView.titleText = model.title
         
         expandableContentHeightConstraint.isActive = !expanded
         
@@ -64,22 +61,16 @@ class ExpandibleCell: UITableViewCell {
             headerView.heightAnchor.constraint(equalToConstant: 40),
         ])
         
-        cardView.addSubview(titleLabel)
+        cardView.addSubview(expandView)
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: headerView.bottomAnchor),
-            titleLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 28),
-        ])
-        
-        cardView.addSubview(expandButton)
-        NSLayoutConstraint.activate([
-            expandButton.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
-            expandButton.leadingAnchor.constraint(equalTo: titleLabel.trailingAnchor, constant: 28),
-            expandButton.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -28),
+            expandView.topAnchor.constraint(equalTo: headerView.bottomAnchor),
+            expandView.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 28),
+            expandView.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -28)
         ])
         
         cardView.addSubview(expandableContent)
         NSLayoutConstraint.activate([
-            expandableContent.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 12),
+            expandableContent.topAnchor.constraint(equalTo: expandView.bottomAnchor, constant: 12),
             expandableContent.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 28),
             expandableContent.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -28),
             expandableContent.bottomAnchor.constraint(lessThanOrEqualTo: cardView.bottomAnchor, constant: -12),
@@ -109,43 +100,6 @@ class ExpandibleCell: UITableViewCell {
         selectionStyle = .none
         backgroundColor = .clear
         contentView.backgroundColor = .clear
-        
-        expandButton.addAction(.init { [weak self] _ in
-            guard
-                let self = self,
-                let tableView = self.superview as? UITableView
-            else {
-                return
-            }
-            
-            self.expanded = !self.expanded
-            
-            tableView.beginUpdates()
-            
-            UIView.animate(
-                withDuration: 0.3,
-                delay: 0,
-                animations: {
-                    self.expandButton.transform = self.expanded
-                    ? .init(rotationAngle: .pi - 0.001)
-                    : .identity
-                    self.expandableContentHeightConstraint.isActive = !self.expanded
-                    self.contentView.layoutIfNeeded()
-                }, completion: { completed in
-                    self.expanded = completed ? self.expanded : !self.expanded
-                    self.expandButton.transform = self.expanded
-                    ? .init(rotationAngle: .pi - 0.001)
-                    : .identity
-                    self.expandableContentHeightConstraint.isActive = !self.expanded
-                    
-                    if completed {
-                        self.delegate?.expandableTableViewCell(self, expanded: self.expanded)
-                    }
-                }
-            )
-            
-            tableView.endUpdates()
-        }, for: .primaryActionTriggered)
     }
     
     private let cardView: UIView = {
@@ -167,21 +121,11 @@ class ExpandibleCell: UITableViewCell {
         return view
     }()
     
-    private let expandView: ExpandView = {
+    private lazy var expandView: ExpandView = {
         let view = ExpandView()
+        view.delegate = self
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
-    }()
-    
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 20, weight: .regular)
-        label.textColor = .white
-        label.setContentHuggingPriority(.required, for: .vertical)
-        label.setContentCompressionResistancePriority(.required, for: .vertical)
-        label.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
     }()
     
     private let footerLabel: UILabel = {
@@ -193,14 +137,6 @@ class ExpandibleCell: UITableViewCell {
         label.setContentHuggingPriority(.defaultLow, for: .horizontal)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
-    }()
-    
-    private let expandButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setImage(.init(systemName: "chevron.down"), for: .normal)
-        button.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
     }()
     
     private let expandableContent: UIView = {
@@ -220,4 +156,34 @@ class ExpandibleCell: UITableViewCell {
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
+}
+
+extension ExpandibleCell: ExpandViewDelegate {
+    func didExpand(_ expandView: ExpandView) {
+        guard
+            let tableView = self.superview as? UITableView
+        else {
+            return
+        }
+        
+        self.expanded = !self.expanded
+        
+        tableView.beginUpdates()
+        
+        UIView.animate(
+            withDuration: 0.3,
+            delay: 0,
+            animations: {
+                self.expandableContentHeightConstraint.isActive = !self.expanded
+                self.contentView.layoutIfNeeded()
+            }, completion: { completed in
+                self.expandableContentHeightConstraint.isActive = !self.expanded
+                
+                if completed {
+                    self.delegate?.expandableTableViewCell(self, expanded: self.expanded)
+                }
+            }
+        )
+        tableView.endUpdates()
+    }
 }

@@ -34,6 +34,7 @@ class HeaderView: UIView {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16, weight: .semibold)
         label.textColor = .label
+        label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
 }

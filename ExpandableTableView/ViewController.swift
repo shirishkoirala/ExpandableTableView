@@ -8,7 +8,7 @@
 import UIKit
 
 class ViewController: UIViewController {
-    private let data: [ExpandableCellModel] = {
+    private var data: [ExpandableCellModel] = {
         (1...20).map {
             let longDescription = "This is a detailed description for item \($0). It provides more in-depth information about the cell, including features, usage, and additional insights that make this item unique and informative."
             let shortDescription = "Short description for item \($0)."
@@ -55,6 +55,7 @@ extension ViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: ExpandibleCell.identifier, for: indexPath) as! ExpandibleCell
         cell.configure(with: data[indexPath.row])
+        cell.delegate = self
         return cell
     }
 }
@@ -62,5 +63,12 @@ extension ViewController: UITableViewDataSource {
 extension ViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+}
+
+extension ViewController: ExpandibleCellDelegate {
+    func expandableTableViewCell(_ tableViewCell: UITableViewCell, expanded: Bool) {
+        let indexPath = tableView.indexPath(for: tableViewCell)
+        data[indexPath!.row].isExpanded = expanded
     }
 }
