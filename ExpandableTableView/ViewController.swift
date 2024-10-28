@@ -15,6 +15,7 @@ class ViewController: UIViewController {
             let footerText = "Footer text for item \($0)."
             
             return ExpandableCellModel(
+                heading: "Heading \($0)",
                 title: "Title \($0)",
                 description: $0 % 2 == 0 ? longDescription : shortDescription,
                 footer: footerText

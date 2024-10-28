@@ -56,10 +56,18 @@ class ExpandibleCell: UITableViewCell {
             cardView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -14),
         ])
         
+        cardView.addSubview(headerView)
+        NSLayoutConstraint.activate([
+            headerView.topAnchor.constraint(equalTo: cardView.topAnchor),
+            headerView.leadingAnchor.constraint(equalTo: cardView.leadingAnchor),
+            headerView.trailingAnchor.constraint(equalTo: cardView.trailingAnchor),
+            headerView.heightAnchor.constraint(equalToConstant: 40),
+        ])
+        
         cardView.addSubview(titleLabel)
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 28),
-            titleLabel.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 28),
+            titleLabel.topAnchor.constraint(equalTo: headerView.bottomAnchor),
+            titleLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 28),
         ])
         
         cardView.addSubview(expandButton)
@@ -139,17 +147,24 @@ class ExpandibleCell: UITableViewCell {
             tableView.endUpdates()
         }, for: .primaryActionTriggered)
     }
+    
     private let cardView: UIView = {
         let view = UIView()
         view.backgroundColor = .card
-        view.layer.cornerRadius = 10
-        view.clipsToBounds = true
-        view.translatesAutoresizingMaskIntoConstraints = false
         view.layer.shadowColor = UIColor.black.cgColor
         view.layer.shadowOpacity = 0.3
         view.layer.shadowOffset = CGSize(width: 0, height: 2)
         view.layer.shadowRadius = 4
-        view.layer.masksToBounds = false
+        view.layer.cornerRadius = 30
+        view.clipsToBounds = true
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    private let headerView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .darkGray
+        view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
@@ -157,7 +172,6 @@ class ExpandibleCell: UITableViewCell {
         let label = UILabel()
         label.font = .systemFont(ofSize: 20, weight: .regular)
         label.textColor = .white
-        label.backgroundColor = .darkGray
         label.setContentHuggingPriority(.required, for: .vertical)
         label.setContentCompressionResistancePriority(.required, for: .vertical)
         label.setContentHuggingPriority(.defaultLow, for: .horizontal)

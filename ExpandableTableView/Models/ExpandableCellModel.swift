@@ -6,6 +6,7 @@
 //
 
 struct ExpandableCellModel {
+    let heading: String
     let title: String
     let description: String
     let footer: String
