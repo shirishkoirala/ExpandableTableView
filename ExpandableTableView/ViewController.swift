@@ -10,7 +10,13 @@ import UIKit
 class ViewController: UIViewController {
     private let data: [ExpandableCellModel] = {
         (1...20).map {
-            ExpandableCellModel(title: "Title \($0)", description: "Description \($0)")
+            let longDescription = "This is a detailed description for item \($0). It provides more in-depth information about the cell, including features, usage, and additional insights that make this item unique and informative."
+            let shortDescription = "Short description for item \($0)."
+            
+            return ExpandableCellModel(
+                title: "Title \($0)",
+                description: $0 % 2 == 0 ? longDescription : shortDescription
+            )
         }
     }()
     
@@ -25,7 +31,7 @@ class ViewController: UIViewController {
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
     }
-
+    
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.register(ExpandibleCell.self, forCellReuseIdentifier: ExpandibleCell.identifier)
