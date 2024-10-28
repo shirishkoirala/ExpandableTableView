@@ -79,18 +79,7 @@ class ExpandibleCell: UITableViewCell {
             expandableContentHeightConstraint,
         ])
         
-        expandableContent.addSubview(detailsLabel)
-        let detailsBottomConstraint = detailsLabel.bottomAnchor.constraint(
-            lessThanOrEqualTo: expandableContent.bottomAnchor, constant: -12
-        )
-        detailsBottomConstraint.priority = .fittingSizeLevel
-        
-        NSLayoutConstraint.activate([
-            detailsLabel.topAnchor.constraint(equalTo: expandableContent.topAnchor, constant: 12),
-            detailsLabel.leadingAnchor.constraint(equalTo: expandableContent.leadingAnchor, constant: 28),
-            detailsLabel.trailingAnchor.constraint(equalTo: expandableContent.trailingAnchor, constant: -28),
-            detailsBottomConstraint
-        ])
+        expandableContent.addArrangedSubview(detailsLabel)
         
         cardView.addSubview(footerLabel)
         NSLayoutConstraint.activate([
@@ -142,9 +131,8 @@ class ExpandibleCell: UITableViewCell {
         return label
     }()
     
-    private let expandableContent: UIView = {
-        let view = UIView()
-        view.clipsToBounds = true
+    private let expandableContent: ContentView = {
+        let view = ContentView()
         view.backgroundColor = .darkCard
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
@@ -177,9 +165,9 @@ extension ExpandibleCell: ExpandViewDelegate {
             animations: {
                 self.expandableContentHeightConstraint.isActive = !self.expanded
                 self.contentView.layoutIfNeeded()
+                self.expandableContent.alpha = self.expanded ? 1 : 0
             }, completion: { completed in
                 self.expandableContentHeightConstraint.isActive = !self.expanded
-                
                 if completed {
                     self.delegate?.expandableTableViewCell(self, expanded: self.expanded)
                 }
