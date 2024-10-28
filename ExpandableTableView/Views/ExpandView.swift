@@ -15,11 +15,20 @@ class ExpandView: UIView {
             titleLabel.text = titleText
         }
     }
+    
     var expanded: Bool = false {
         didSet {
-            expandButton.transform = expanded
-            ? .init(rotationAngle: .pi - 0.001)
-            : .identity
+            UIView.animate(
+                withDuration: 0.3,
+                delay: 0,
+                animations: {
+                    self.expandButton.transform = self.expanded
+                    ? .init(rotationAngle: .pi - 0.001)
+                    : .identity
+                }, completion: { completed in
+                    self.delegate?.didExpand(self)
+                }
+            )
         }
     }
     
@@ -36,41 +45,27 @@ class ExpandView: UIView {
     }
     
     private func setupViews() {
-        backgroundColor = .white
+        backgroundColor = .darkCard
         addSubview(titleLabel)
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: self.topAnchor),
+            titleLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 28),
             titleLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 28),
-            titleLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor)
+            titleLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -28)
         ])
         
         addSubview(expandButton)
         NSLayoutConstraint.activate([
             expandButton.leadingAnchor.constraint(equalTo: titleLabel.trailingAnchor, constant: 28),
             expandButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -28),
-            expandButton.topAnchor.constraint(equalTo: self.topAnchor),
-            expandButton.bottomAnchor.constraint(equalTo: self.bottomAnchor)
+            expandButton.topAnchor.constraint(equalTo: self.topAnchor, constant: 28),
+            expandButton.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -28)
         ])
     }
+    
     @objc private func onExpand() {
         self.expanded = !self.expanded
-        
-        UIView.animate(
-            withDuration: 0.3,
-            delay: 0,
-            animations: {
-                self.expandButton.transform = self.expanded
-                ? .init(rotationAngle: .pi - 0.001)
-                : .identity
-            }, completion: { completed in
-                self.expanded = completed ? self.expanded : !self.expanded
-                self.expandButton.transform = self.expanded
-                ? .init(rotationAngle: .pi - 0.001)
-                : .identity
-                self.delegate?.didExpand(self)
-            }
-        )
     }
+    
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 20, weight: .regular)
@@ -85,6 +80,7 @@ class ExpandView: UIView {
     private lazy var expandButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(.init(systemName: "chevron.down"), for: .normal)
+        button.imageView?.tintColor = .white
         button.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(onExpand), for: .touchUpInside)

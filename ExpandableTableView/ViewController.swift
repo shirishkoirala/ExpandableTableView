@@ -72,3 +72,12 @@ extension ViewController: ExpandibleCellDelegate {
         data[indexPath!.row].isExpanded = expanded
     }
 }
+
+extension UIView {
+    func findParentTableView() -> UITableView? {
+        if let tableView = self as? UITableView {
+            return tableView
+        }
+        return superview?.findParentTableView()
+    }
+}

@@ -8,6 +8,11 @@
 import UIKit
 
 class HeaderView: UIView {
+    var titleText: String? {
+        didSet {
+            label.text = titleText
+        }
+    }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
@@ -20,12 +25,11 @@ class HeaderView: UIView {
     }
     
     private func setupViews() {
-        backgroundColor = .red
         addSubview(label)
         NSLayoutConstraint.activate([
             label.topAnchor.constraint(equalTo: topAnchor),
             label.bottomAnchor.constraint(equalTo: bottomAnchor),
-            label.leftAnchor.constraint(equalTo: leftAnchor),
+            label.leftAnchor.constraint(equalTo: leftAnchor, constant: 28),
             label.rightAnchor.constraint(equalTo: rightAnchor)
         ])
     }
@@ -33,7 +37,7 @@ class HeaderView: UIView {
     private let label: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16, weight: .semibold)
-        label.textColor = .label
+        label.textColor = .white
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
