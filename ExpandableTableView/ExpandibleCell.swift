@@ -41,29 +41,40 @@ class ExpandibleCell: UITableViewCell {
         expandButton.transform = expanded
         ? .init(rotationAngle: .pi - 0.001)
         : .identity
+        
         expandableContentHeightConstraint.isActive = !expanded
+        
+        footerLabel.text = model.footer
     }
     
     private func setupViews() {
-        contentView.addSubview(titleLabel)
+        contentView.addSubview(cardView)
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 28),
-            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 28),
+            cardView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 28),
+            cardView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 28),
+            cardView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -28),
+            cardView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -28),
         ])
         
-        contentView.addSubview(expandButton)
+        cardView.addSubview(titleLabel)
+        NSLayoutConstraint.activate([
+            titleLabel.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 28),
+            titleLabel.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 28),
+        ])
+        
+        cardView.addSubview(expandButton)
         NSLayoutConstraint.activate([
             expandButton.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
             expandButton.leadingAnchor.constraint(equalTo: titleLabel.trailingAnchor, constant: 28),
-            expandButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -28),
+            expandButton.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -28),
         ])
         
-        contentView.addSubview(expandableContent)
+        cardView.addSubview(expandableContent)
         NSLayoutConstraint.activate([
             expandableContent.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 12),
-            expandableContent.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 28),
-            expandableContent.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -28),
-            expandableContent.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -12),
+            expandableContent.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 28),
+            expandableContent.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -28),
+            expandableContent.bottomAnchor.constraint(lessThanOrEqualTo: cardView.bottomAnchor, constant: -12),
             expandableContentHeightConstraint,
         ])
         
@@ -80,22 +91,12 @@ class ExpandibleCell: UITableViewCell {
             detailsBottomConstraint
         ])
         
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        expandButton.translatesAutoresizingMaskIntoConstraints = false
-        detailsLabel.translatesAutoresizingMaskIntoConstraints = false
-        expandableContent.translatesAutoresizingMaskIntoConstraints = false
-        
-        titleLabel.setContentHuggingPriority(.required, for: .vertical)
-        titleLabel.setContentCompressionResistancePriority(.required, for: .vertical)
-        
-        titleLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        
-        expandButton.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-        
-        detailsLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
-        detailsLabel.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
-        
-       
+        cardView.addSubview(footerLabel)
+        NSLayoutConstraint.activate([
+            footerLabel.topAnchor.constraint(equalTo: expandableContent.bottomAnchor, constant: 12),
+            footerLabel.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -28),
+            footerLabel.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 28),
+        ])
         
         selectionStyle = .none
         
@@ -136,10 +137,33 @@ class ExpandibleCell: UITableViewCell {
             tableView.endUpdates()
         }, for: .primaryActionTriggered)
     }
+    private let cardView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .darkGray
+        view.layer.cornerRadius = 10
+        view.clipsToBounds = true
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
     
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 20, weight: .regular)
+        label.textColor = .white
+        label.setContentHuggingPriority(.required, for: .vertical)
+        label.setContentCompressionResistancePriority(.required, for: .vertical)
+        label.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private let footerLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .white
+        label.font = .systemFont(ofSize: 20, weight: .regular)
+        label.setContentHuggingPriority(.required, for: .vertical)
+        label.setContentCompressionResistancePriority(.required, for: .vertical)
+        label.setContentHuggingPriority(.defaultLow, for: .horizontal)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -147,6 +171,7 @@ class ExpandibleCell: UITableViewCell {
     private let expandButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(.init(systemName: "chevron.down"), for: .normal)
+        button.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -160,8 +185,11 @@ class ExpandibleCell: UITableViewCell {
     
     private let detailsLabel: UILabel = {
         let label = UILabel()
+        label.textColor = .white
         label.font = .systemFont(ofSize: 18, weight: .regular)
         label.numberOfLines = 0
+        label.setContentHuggingPriority(.defaultLow, for: .vertical)
+        label.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()

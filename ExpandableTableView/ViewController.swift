@@ -12,10 +12,12 @@ class ViewController: UIViewController {
         (1...20).map {
             let longDescription = "This is a detailed description for item \($0). It provides more in-depth information about the cell, including features, usage, and additional insights that make this item unique and informative."
             let shortDescription = "Short description for item \($0)."
+            let footerText = "Footer text for item \($0)."
             
             return ExpandableCellModel(
                 title: "Title \($0)",
-                description: $0 % 2 == 0 ? longDescription : shortDescription
+                description: $0 % 2 == 0 ? longDescription : shortDescription,
+                footer: footerText
             )
         }
     }()
