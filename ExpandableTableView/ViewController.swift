@@ -39,6 +39,8 @@ class ViewController: UIViewController {
         tableView.register(ExpandibleCell.self, forCellReuseIdentifier: ExpandibleCell.identifier)
         tableView.dataSource = self
         tableView.delegate = self
+        tableView.separatorStyle = .none
+        tableView.backgroundColor = .background
         tableView.translatesAutoresizingMaskIntoConstraints = false
         return tableView
     }()

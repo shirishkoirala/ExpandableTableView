@@ -50,10 +50,10 @@ class ExpandibleCell: UITableViewCell {
     private func setupViews() {
         contentView.addSubview(cardView)
         NSLayoutConstraint.activate([
-            cardView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 28),
+            cardView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 14),
             cardView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 28),
             cardView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -28),
-            cardView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -28),
+            cardView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -14),
         ])
         
         cardView.addSubview(titleLabel)
@@ -99,6 +99,8 @@ class ExpandibleCell: UITableViewCell {
         ])
         
         selectionStyle = .none
+        backgroundColor = .clear
+        contentView.backgroundColor = .clear
         
         expandButton.addAction(.init { [weak self] _ in
             guard
@@ -139,10 +141,15 @@ class ExpandibleCell: UITableViewCell {
     }
     private let cardView: UIView = {
         let view = UIView()
-        view.backgroundColor = .darkGray
+        view.backgroundColor = .card
         view.layer.cornerRadius = 10
         view.clipsToBounds = true
         view.translatesAutoresizingMaskIntoConstraints = false
+        view.layer.shadowColor = UIColor.black.cgColor
+        view.layer.shadowOpacity = 0.3
+        view.layer.shadowOffset = CGSize(width: 0, height: 2)
+        view.layer.shadowRadius = 4
+        view.layer.masksToBounds = false
         return view
     }()
     
@@ -150,6 +157,7 @@ class ExpandibleCell: UITableViewCell {
         let label = UILabel()
         label.font = .systemFont(ofSize: 20, weight: .regular)
         label.textColor = .white
+        label.backgroundColor = .darkGray
         label.setContentHuggingPriority(.required, for: .vertical)
         label.setContentCompressionResistancePriority(.required, for: .vertical)
         label.setContentHuggingPriority(.defaultLow, for: .horizontal)
