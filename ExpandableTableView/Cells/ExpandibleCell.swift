@@ -161,9 +161,14 @@ class ExpandibleCell: UITableViewCell {
         return view
     }()
     
-    private let headerView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .darkGray
+    private let headerView: HeaderView = {
+        let view = HeaderView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    private let expandView: ExpandView = {
+        let view = ExpandView()
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
